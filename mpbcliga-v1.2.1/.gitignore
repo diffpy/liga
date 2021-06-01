@@ -1,0 +1,29 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a.sconf_temp
+
+# SCons build files
+*.pyc
+.gdb_history
+.sconf_temp/
+.sconsign.dblite
+build
+config.log
+errors.err
+sconscript.local
+sconsvars.py
+tags
+
+# eclipse
+.project
+.pydevproject

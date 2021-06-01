@@ -20,9 +20,3 @@ P. Juhas, L. Granlund, S. R. Gujarathi, P. M. Duxbury, and S. J. L. Billinge. \C
 solution from experimentally determined atomic pair distribution functions". In: J. Appl.
 Crystallogr. 42.3 (2010), pp. 623{629. doi: 10.1107/S002188981000988X. url:
 http://dx.doi.org/10.1107/S002188981000988X
-
-The initial Liga version was tested on Bucky ball, generated Platonic solids,
-and Lennard-Jones clusters - some of these are available in a supplement
-to the algorithm paper in Acta Cryst A, https://doi.org/10.1107/S0108767308027591.
-The small organic molecules from various sources the authors have tested with a mixed success can be accessed through u24. Those structures and their distance
-data should be under /u24/juhas/research/LIGA_runs/organics.

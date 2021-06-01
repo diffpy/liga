@@ -13,7 +13,7 @@ if icpc:
     env.Tool('intelc', topdir=icpc[:icpc.rfind('/bin')])
 
 # Declare external libraries.
-#env.ParseConfig("python-config --includes")
+env.ParseConfig("python-config --includes")
 env.ParseConfig("python-config --ldflags")
 env.ParseConfig("gsl-config --cflags --libs")
 # configure version specific options.
