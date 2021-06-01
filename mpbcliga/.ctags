@@ -1,0 +1,3 @@
+--langmap=c++:.tpl.hpp.cpp
+--exclude=Version.cpp
+--exclude=Test*.cpp

@@ -1,0 +1,4 @@
+distfile=tausonite.dst
+crystal=true
+latpar=3.905280, 3.905280, 3.905280, 90, 90, 90
+natoms=5

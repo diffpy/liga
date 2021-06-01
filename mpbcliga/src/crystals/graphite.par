@@ -1,0 +1,4 @@
+distfile=graphite.dst
+crystal=true
+latpar=2.456, 2.456, 6.696, 90, 90, 120
+natoms=8

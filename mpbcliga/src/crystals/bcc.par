@@ -1,0 +1,5 @@
+distfile=bcc.dst
+crystal=true
+latpar=1, 1, 1, 90, 90, 90
+rmax=3
+natoms=2

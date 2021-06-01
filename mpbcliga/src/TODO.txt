@@ -1,0 +1,5 @@
+2008-12-15  cost calculation for nacl_exp03_013
+
+    Cost for the 0802LigaCrystals run nacl_exp03_013 is significantly
+    different when taken from logfile or when calculated using crystaldvar.py.
+    Check what are the issues with cost calculation.

@@ -1,0 +1,4 @@
+distfile=fluorite.dst
+crystal=true
+latpar=5.4625,  5.4625,  5.4625, 90, 90, 90
+natoms=12

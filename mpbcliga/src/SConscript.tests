@@ -1,0 +1,93 @@
+import os
+
+Import('env')
+
+# Environment for building unit test driver
+env_test = env.Clone()
+env_test.Tool('cxxtest')
+env_test['CXXTEST_SUFFIX'] = '.hpp'
+
+# Targets --------------------------------------------------------------------
+
+# alltests -- the unit test driver
+test_sources = []
+
+# add all unit test modules when variable tests was not set.
+if env_test.get('tests') is None:
+    test_sources += env_test.Glob('Test*.hpp')
+else:
+    test_sources = env_test.Split(env_test['tests'])
+
+# special builder for tests_dir.hpp
+def build_header(target, source, env):
+    tdfullpath = source[0].abspath
+    flds = {'tests_dir' : os.path.dirname(tdfullpath)}
+    tests_dir_code = open(tdfullpath).read() % flds
+    open(str(target[0]), 'w').write(tests_dir_code)
+    return None
+
+env_test.Append(BUILDERS={'BuildHeader_hpp' :
+        Builder(action=build_header)})
+tdcpp = env_test.BuildHeader_hpp(['tests_dir.cpp'],
+        [env_test.File('tests_dir.tpl').srcnode(),
+         env_test.Value(Dir('.').srcnode().abspath)]
+        )
+
+alltests = env_test.CxxTest('alltests',
+        test_sources + env_test['lib_objects'] + tdcpp)
+Alias('alltests', alltests)
+
+# unittest
+
+unittest = env_test.Alias('unittest', alltests, alltests[0].abspath)
+env_test.AlwaysBuild(unittest)
+
+# runtests
+
+mpbcliga = env['mpbcliga']
+mpbcliga_exe = mpbcliga[0].abspath
+runtest_options = 'maxcputime=1 seasontrials=500 crystal=false'
+
+def rtcmd(*args):
+    cmdwords = (mpbcliga_exe, runtest_options) + args + ('>/dev/null',)
+    cmd = ' '.join(cmdwords)
+    return cmd
+
+# solids
+
+dst_solids = [env_test.File('solids/%s' % f).srcnode() for f in """
+        tetrahedron.dst  octahedron.dst  octahedron.dse  cube.dst
+        icosahedron.dst  dodecahedron.dst
+        """.split()]
+for ft in dst_solids:
+    ff = ft.path
+    rt_solids = env_test.Alias('runtest-solids', mpbcliga, rtcmd(ff))
+env_test.AlwaysBuild(rt_solids)
+
+# shapes
+
+dst_shapes = [env_test.File('shapes/%s' % f).srcnode() for f in
+        ("square.dst", "pentagon.dst", "hexagon.dst",
+        "heptagon.dst", "octagon.dst")]
+for ft in dst_shapes:
+    ff = ft.path
+    rt_shapes = env_test.Alias('runtest-shapes', mpbcliga,
+            rtcmd('ndim=2', ff))
+env_test.AlwaysBuild(rt_shapes)
+
+# bangle_range
+
+env_test.Alias('runtest-bangle_range', mpbcliga,
+    rtcmd('bangle_range=1.5,80', 'src/shapes/square.dst'))
+env_test.Alias('runtest-bangle_range', mpbcliga,
+    rtcmd('bangle_range=1.5,80', 'src/shapes/hexagon.dst'))
+env_test.AlwaysBuild(env_test.Alias('runtest-bangle_range'))
+
+# merge to common targets
+
+runtest = env_test.Alias('runtest',
+        ['runtest-solids', 'runtest-shapes', 'runtest-bangle_range'])
+
+test = env_test.Alias('test', ['unittest', 'runtest'])
+
+# vim: ft=python

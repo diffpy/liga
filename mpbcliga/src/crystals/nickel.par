@@ -1,0 +1,4 @@
+distfile=nickel.dst
+crystal=true
+latpar=3.52, 3.52, 3.52, 90, 90, 90
+natoms=4

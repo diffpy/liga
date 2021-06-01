@@ -1,0 +1,31 @@
+import os
+
+Import('env')
+
+def build_VersionCode(target, source, env):
+    import string
+    from mpbcligabuildutils import gitinfo
+    tplcode = source[0].get_contents()
+    versiontemplate = string.Template(tplcode)
+    versioncode = versiontemplate.safe_substitute(gitinfo())
+    open(target[0].path, 'w').write(versioncode)
+    return None
+
+env.Append(BUILDERS={'BuildVersionCode' :
+        Builder(action=build_VersionCode, suffix='.cpp', src_suffix='.tpl')})
+
+# Targets --------------------------------------------------------------------
+
+vcpp = File('Version.cpp')
+
+# Construct Version.cpp only if it does not exist
+if not os.path.isfile(str(vcpp.srcnode())):
+    from mpbcligabuildutils import gitinfo
+    vtpl = File('Version.tpl')
+    ginfo = gitinfo()
+    vcpp, = env.BuildVersionCode(['Version.cpp'], vtpl)
+    env.Depends(vcpp, env.Value(ginfo['version'] + ginfo['commit']))
+
+env['lib_sources'] += [vcpp]
+
+# vim: ft=python

@@ -1,0 +1,4 @@
+distfile=silicon.dst
+crystal=true
+latpar=5.4307, 5.4307, 5.4307, 90, 90, 90
+natoms=8

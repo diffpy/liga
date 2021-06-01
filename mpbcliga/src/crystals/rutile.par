@@ -1,0 +1,4 @@
+distfile=rutile.dst
+crystal=true
+latpar=4.593, 4.593, 2.959, 90, 90, 90
+natoms=6
