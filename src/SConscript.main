@@ -16,6 +16,13 @@ if icpc:
 env.ParseConfig("python-config --includes")
 env.ParseConfig("python-config --ldflags")
 env.ParseConfig("gsl-config --cflags --libs")
+
+fast_linkflags = ['-s']
+
+# Platform specific intricacies.
+if env['PLATFORM'] == 'darwin':
+    fast_linkflags[:] = []
+
 # configure version specific options.
 if not (GetOption('clean') or env.GetOption('help')):
     SConscript('SConscript.configure')
@@ -37,6 +44,7 @@ if env['build'] == 'debug':
 elif env['build'] == 'fast':
     env.AppendUnique(CCFLAGS=['-O3'] + fast_optimflags)
     env.AppendUnique(CPPDEFINES='NDEBUG')
+    env.AppendUnique(LINKFLAGS=fast_linkflags)
 
 if env['profile']:
     env.AppendUnique(CCFLAGS='-pg')
