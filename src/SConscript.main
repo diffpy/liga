@@ -20,9 +20,13 @@ if env['tool'] == 'intelc':
         Exit(1)
     env.Tool('intelc', topdir=icpc[:icpc.rfind('/bin')])
 
+# use python3-config at the same path as python
+pybindir = os.path.dirname(env.WhereIs(env['python']))
+pythonconfig = os.path.join(pybindir, 'python3-config')
+
 # Declare external libraries.
-env.ParseConfig("python-config --includes")
-env.ParseConfig("python-config --ldflags")
+env.ParseConfig(pythonconfig + " --includes")
+env.ParseConfig(pythonconfig + " --ldflags")
 env.ParseConfig("gsl-config --cflags --libs")
 
 fast_linkflags = ['-s']
