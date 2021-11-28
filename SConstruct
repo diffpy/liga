@@ -17,10 +17,18 @@ SCons construction environment can be customized in sconscript.local script.
 """
 
 import os
+import subprocess
 import platform
 
 def subdictionary(d, keyset):
     return dict(kv for kv in d.items() if kv[0] in keyset)
+
+def pyoutput(cmd):
+    proc = subprocess.Popen([env['python'], '-c', cmd],
+                            stdout=subprocess.PIPE,
+                            universal_newlines=True)
+    out = proc.communicate()[0]
+    return out.rstrip()
 
 # copy system environment variables related to compilation
 DefaultEnvironment(ENV=subdictionary(os.environ, '''
@@ -65,7 +73,7 @@ btags = [env['build'], platform.machine()]
 if env['profile']:  btags.append('profile')
 builddir = env.Dir('build/' + '-'.join(btags))
 
-Export('env')
+Export('env', 'pyoutput')
 
 def GlobSources(pattern):
     """Same as Glob but also require that source node is a valid file.

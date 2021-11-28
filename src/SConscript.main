@@ -42,6 +42,7 @@ if env['PLATFORM'] == 'darwin':
 # configure version specific options.
 if not (GetOption('clean') or env.GetOption('help')):
     SConscript('SConscript.configure')
+    Import('env')
 
 # Compiler specific options
 if icpc:
