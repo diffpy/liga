@@ -9,6 +9,8 @@
 #ifndef ATOMFILTER_T_HPP_INCLUDED
 #define ATOMFILTER_T_HPP_INCLUDED
 
+#include <cstddef>
+
 class Atom_t;
 class Molecule;
 
