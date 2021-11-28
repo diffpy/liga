@@ -69,7 +69,9 @@ from SCons.Util import PrependPath, unique, uniquer
 import os
 
 # A warning class to notify users of problems
-class ToolCxxTestWarning(SCons.Warnings.Warning):
+class ToolCxxTestWarning(SCons.Warnings.SConsWarning
+                         if hasattr(SCons.Warnings, 'SConsWarning')
+                         else SCons.Warnings.Warning):
     pass
 
 SCons.Warnings.enableWarningClass(ToolCxxTestWarning)
