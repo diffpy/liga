@@ -41,7 +41,8 @@ env.EnsureSConsVersion(0, 98, 1)
 # Customizable compile variables
 vars = Variables('sconsvars.py')
 
-vars.Add('tests', 'Custom list of unit test sources', None)
+vars.Add('tests',
+    'Fixed-string patterns for selecting unit test sources.', None)
 vars.Add(EnumVariable('build',
     'compiler settings', 'fast',
     allowed_values=('debug', 'fast')))
