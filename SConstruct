@@ -16,20 +16,19 @@ Variables can be also assigned in a user-written script sconsvars.py.
 SCons construction environment can be customized in sconscript.local script.
 """
 
-# Top level targets that are defined in subsidiary SConscripts
-#
-
 import os
 import platform
 
+def subdictionary(d, keyset):
+    return dict(kv for kv in d.items() if kv[0] in keyset)
+
 # copy system environment variables related to compilation
-DefaultEnvironment(ENV={
-        'PATH' : os.environ['PATH'],
-        'PYTHONPATH' : os.environ.get('PYTHONPATH', ''),
-        'CPATH' : os.environ.get('CPATH', ''),
-        'LIBRARY_PATH' : os.environ.get('LIBRARY_PATH', ''),
-        'LD_LIBRARY_PATH' : os.environ.get('LD_LIBRARY_PATH', ''),
-    }
+DefaultEnvironment(ENV=subdictionary(os.environ, '''
+    PATH PYTHONPATH
+    CPATH CPLUS_INCLUDE_PATH LIBRARY_PATH LD_RUN_PATH
+    LD_LIBRARY_PATH DYLD_LIBRARY_PATH DYLD_FALLBACK_LIBRARY_PATH
+    MACOSX_DEPLOYMENT_TARGET LANG
+    '''.split())
 )
 
 # Create construction environment
