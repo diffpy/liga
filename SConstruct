@@ -57,7 +57,9 @@ vars.Add(PathVariable('bindir',
 vars.Update(env)
 env.Help(MY_SCONS_HELP % vars.GenerateHelpText(env))
 
-builddir = env.Dir('build/%s-%s' % (env['build'], platform.machine()))
+btags = [env['build'], platform.machine()]
+if env['profile']:  btags.append('profile')
+builddir = env.Dir('build/' + '-'.join(btags))
 
 Export('env')
 
