@@ -50,6 +50,8 @@ vars.Add(EnumVariable('tool',
     allowed_values=('default', 'intelc')))
 vars.Add(BoolVariable('profile',
     'build with profiling information', False))
+vars.Add('python',
+    'Python executable to use for installation.', 'python3')
 vars.Add(PathVariable('prefix',
     'installation prefix directory', '/usr/local'))
 vars.Update(env)
