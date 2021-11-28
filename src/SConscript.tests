@@ -22,8 +22,9 @@ else:
 def build_header(target, source, env):
     tdfullpath = source[0].abspath
     flds = {'tests_dir' : os.path.dirname(tdfullpath)}
-    tests_dir_code = open(tdfullpath).read() % flds
-    open(str(target[0]), 'w').write(tests_dir_code)
+    tests_dir_code = source[0].get_text_contents() % flds
+    with open(target[0].path, 'w') as fp:
+        fp.write(tests_dir_code)
     return None
 
 env_test.Append(BUILDERS={'BuildHeader_hpp' :

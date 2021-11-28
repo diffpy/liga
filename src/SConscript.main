@@ -62,10 +62,10 @@ def isLibSource(f):
     return rv
 
 env['binaries'] = []
-env['lib_sources'] = filter(isLibSource, env.Glob('*.cpp'))
+env['lib_sources'] = [f for f in env.Glob('*.cpp') if isLibSource(f)]
 # This SConscript updates Version.cpp and adds it to lib_sources
 SConscript('SConscript.version')
-env['lib_objects'] = map(env.Object, env['lib_sources'])
+env['lib_objects'] = [env.Object(f) for f in env['lib_sources']]
 
 # Top Level Targets ----------------------------------------------------------
 
@@ -99,7 +99,7 @@ def get_target_path(f):
         fb += '-debug'
     tgt = os.path.join(env['bindir'], fb + fe)
     return tgt
-bin_targets = map(get_target_path, env['binaries'])
+bin_targets = [get_target_path(f) for f in env['binaries']]
 
 Alias('install-bin', InstallAs(bin_targets, env['binaries']))
 

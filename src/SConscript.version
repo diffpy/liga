@@ -5,10 +5,11 @@ Import('env')
 def build_VersionCode(target, source, env):
     import string
     from mpbcligabuildutils import gitinfo
-    tplcode = source[0].get_contents()
+    tplcode = source[0].get_text_contents()
     versiontemplate = string.Template(tplcode)
     versioncode = versiontemplate.safe_substitute(gitinfo())
-    open(target[0].path, 'w').write(versioncode)
+    with open(target[0].path, 'w') as fp:
+        fp.write(versioncode)
     return None
 
 env.Append(BUILDERS={'BuildVersionCode' :
