@@ -1,6 +1,6 @@
 import os
 
-Import('env')
+Import('env', 'GlobSources')
 
 # Environment for building unit test driver
 env_test = env.Clone()
@@ -14,7 +14,7 @@ test_sources = []
 
 # add all unit test modules when variable tests was not set.
 if env_test.get('tests') is None:
-    test_sources += env_test.Glob('Test*.hpp')
+    test_sources += GlobSources('Test*.hpp')
 else:
     test_sources = env_test.Split(env_test['tests'])
 

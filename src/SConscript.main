@@ -1,6 +1,6 @@
 import os
 
-Import('env')
+Import('env', 'GlobSources')
 
 # Build environment configuration --------------------------------------------
 
@@ -62,7 +62,7 @@ def isLibSource(f):
     return rv
 
 env['binaries'] = []
-env['lib_sources'] = [f for f in env.Glob('*.cpp') if isLibSource(f)]
+env['lib_sources'] = [f for f in GlobSources('*.cpp') if isLibSource(f)]
 # This SConscript updates Version.cpp and adds it to lib_sources
 SConscript('SConscript.version')
 env['lib_objects'] = [env.Object(f) for f in env['lib_sources']]
