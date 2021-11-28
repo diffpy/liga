@@ -1,24 +1,5 @@
 Import('env')
 
-# Define Custom configure checks ---------------------------------------------
-
-def CheckBoostVersion(context, version):
-    '''Check if Boost Library is at least of specified version
-    '''
-    # Boost versions are in format major.minor.subminor
-    v_arr = map(int, version.split("."))
-    version_n = sum([(v * n) for v, n in zip(v_arr, (1e5, 1e2, 1))])
-    context.Message('Checking for Boost version >= %s... ' % (version))
-    rv = context.TryCompile('\n'.join([
-        '#include <boost/version.hpp>',
-        '#if BOOST_VERSION < %d',
-        '#error Installed boost is too old!',
-        '#endif',
-        'int main() { return 0; }',
-        '', ]) % version_n, '.cpp')
-    context.Result(rv)
-    return rv
-
 # Helper functions -----------------------------------------------------------
 
 boostlibtags = ['-mt', '']
@@ -42,9 +23,7 @@ def configure_boost_library(libname):
 
 # Start configuration --------------------------------------------------------
 
-conf = Configure(env, custom_tests={
-    'CheckBoostVersion' : CheckBoostVersion,
-    })
+conf = Configure(env)
 
 # boost_python
 configure_boost_library('boost_python')
