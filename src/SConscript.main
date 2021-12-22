@@ -1,6 +1,6 @@
 import os
 
-Import('env', 'GlobSources')
+Import('env', 'GlobSources', 'pyconfigvar')
 
 # Build environment configuration --------------------------------------------
 
@@ -53,6 +53,7 @@ if icpc:
 else:
     # g++ options
     env.PrependUnique(CCFLAGS=['-Wall'])
+    env.Append(LINKFLAGS='-Wl,-rpath,{!r}'.format(pyconfigvar('LIBDIR')))
     fast_optimflags = ['-ffast-math']
 
 # Configure build variants
