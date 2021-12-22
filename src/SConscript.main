@@ -56,6 +56,9 @@ else:
     env.Append(LINKFLAGS='-Wl,-rpath,{!r}'.format(pyconfigvar('LIBDIR')))
     fast_optimflags = ['-ffast-math']
 
+# required by libblitz-1.0.2 from conda-forge
+env.Append(CCFLAGS=['-pthread'])
+
 # Configure build variants
 if env['build'] == 'debug':
     env.Append(CCFLAGS='-g')
