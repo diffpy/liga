@@ -16,8 +16,8 @@ void initializePython()
         return;
     }
     static int py_argc = 1;
-    static char arg0[7] = "python";
-    static char* py_argv[] = {arg0};
+    static wchar_t arg0[7] = L"python";
+    static wchar_t* py_argv[] = {arg0};
     Py_Initialize();
     PySys_SetArgv(py_argc, py_argv);
     // Make sure Python does not eat SIGINT.

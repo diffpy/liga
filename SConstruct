@@ -16,20 +16,32 @@ Variables can be also assigned in a user-written script sconsvars.py.
 SCons construction environment can be customized in sconscript.local script.
 """
 
-# Top level targets that are defined in subsidiary SConscripts
-#
-
 import os
+import subprocess
 import platform
 
+def subdictionary(d, keyset):
+    return dict(kv for kv in d.items() if kv[0] in keyset)
+
+def pyoutput(cmd):
+    proc = subprocess.Popen([env['python'], '-c', cmd],
+                            stdout=subprocess.PIPE,
+                            universal_newlines=True)
+    out = proc.communicate()[0]
+    return out.rstrip()
+
+def pyconfigvar(name):
+    cmd = ('from distutils.sysconfig import get_config_var\n'
+           'print(get_config_var(%r))\n') % name
+    return pyoutput(cmd)
+
 # copy system environment variables related to compilation
-DefaultEnvironment(ENV={
-        'PATH' : os.environ['PATH'],
-        'PYTHONPATH' : os.environ.get('PYTHONPATH', ''),
-        'CPATH' : os.environ.get('CPATH', ''),
-        'LIBRARY_PATH' : os.environ.get('LIBRARY_PATH', ''),
-        'LD_LIBRARY_PATH' : os.environ.get('LD_LIBRARY_PATH', ''),
-    }
+DefaultEnvironment(ENV=subdictionary(os.environ, '''
+    PATH PYTHONPATH
+    CPATH CPLUS_INCLUDE_PATH LIBRARY_PATH LD_RUN_PATH
+    LD_LIBRARY_PATH DYLD_LIBRARY_PATH DYLD_FALLBACK_LIBRARY_PATH
+    MACOSX_DEPLOYMENT_TARGET LANG
+    '''.split())
 )
 
 # Create construction environment
@@ -41,12 +53,18 @@ env.EnsureSConsVersion(0, 98, 1)
 # Customizable compile variables
 vars = Variables('sconsvars.py')
 
-vars.Add('tests', 'Custom list of unit test sources', None)
+vars.Add('tests',
+    'Fixed-string patterns for selecting unit test sources.', None)
 vars.Add(EnumVariable('build',
     'compiler settings', 'fast',
     allowed_values=('debug', 'fast')))
+vars.Add(EnumVariable('tool',
+    'C++ compiler toolkit to be used', 'default',
+    allowed_values=('default', 'intelc')))
 vars.Add(BoolVariable('profile',
     'build with profiling information', False))
+vars.Add('python',
+    'Python executable to use for installation.', 'python3')
 vars.Add(PathVariable('prefix',
     'installation prefix directory', '/usr/local'))
 vars.Update(env)
@@ -56,9 +74,19 @@ vars.Add(PathVariable('bindir',
 vars.Update(env)
 env.Help(MY_SCONS_HELP % vars.GenerateHelpText(env))
 
-builddir = env.Dir('build/%s-%s' % (env['build'], platform.machine()))
+btags = [env['build'], platform.machine()]
+if env['profile']:  btags.append('profile')
+builddir = env.Dir('build/' + '-'.join(btags))
 
-Export('env')
+Export('env', 'pyoutput', 'pyconfigvar')
+
+def GlobSources(pattern):
+    """Same as Glob but also require that source node is a valid file.
+    """
+    rv = [f for f in Glob(pattern) if f.srcnode().isfile()]
+    return rv
+
+Export('GlobSources')
 
 if os.path.isfile('sconscript.local'):
     env.SConscript('sconscript.local')

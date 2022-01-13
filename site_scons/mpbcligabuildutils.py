@@ -4,26 +4,30 @@
 '''
 
 import os
+import re
 
 MYDIR = os.path.dirname(os.path.abspath(__file__))
 
 def gitinfo():
     'Extract dictionary of version data from git records.'
-    import re
     from subprocess import Popen, PIPE
     global _cached_gitinfo
-    if _cached_gitinfo is not None:  return _cached_gitinfo
-    rv = _cached_gitinfo = {}
+    if _cached_gitinfo is not None:
+        return _cached_gitinfo
     nullfile = open(os.devnull, 'w')
-    kw = dict(stdout=PIPE, stderr=nullfile, cwd=MYDIR)
+    kw = dict(stdout=PIPE, stderr=nullfile, cwd=MYDIR,
+              universal_newlines=True)
     proc = Popen(['git', 'describe', '--match=v[[:digit:]]*'], **kw)
     desc = proc.stdout.read()
-    if proc.wait():  return gitinfo()
-    proc = Popen(['git', 'log', '-1', '--format=%H%n%ai%n%at%n%an'], **kw)
+    if proc.wait():
+        _cached_gitinfo = {}
+        return gitinfo()
+    proc = Popen(['git', 'log', '-1', '--format=%H%n%ci%n%ct%n%an'], **kw)
     glog = proc.stdout.read()
     words = desc.strip().split('-')
     vtag = words[0].lstrip('v')
     vnum = int((words[1:2] or ['0'])[0])
+    rv = {}
     rv['commit'], rv['date'], rv['timestamp'], rv['author'] = [
             s.strip() for s in glog.strip().split('\n')]
     rv['timestamp'] = int(rv['timestamp'])

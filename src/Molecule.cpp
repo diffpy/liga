@@ -1825,7 +1825,7 @@ void Molecule::WriteStream(ostream& fid, string title) const
 boost::python::object Molecule::newDiffPyStructure() const
 {
     namespace python = boost::python;
-    python::object mstru = python::import("diffpy.Structure");
+    python::object mstru = python::import("diffpy.structure");
     python::object stru = mstru.attr("Structure")();
     return stru;
 }
