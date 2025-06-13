@@ -1,4 +1,5 @@
 # LIGA
+
 Code that implements the LIGA algorithm.
 
 This is used to solve the structure of a material given only its atomic pair distribution function (PDF) as described here:
