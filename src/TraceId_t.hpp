@@ -22,7 +22,7 @@
 struct TraceId_t
 {
     int season;                 // season when molecule was modified
-    int level;                  // liga level played when change occured
+    int level;                  // liga level played when change occurred
     size_t mol_natoms;          // molecule size after change
     double mol_norm_badness;    // molecule cost after change
     long mol_id;                // unique identifier of affected molecule

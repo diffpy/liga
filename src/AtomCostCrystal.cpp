@@ -125,7 +125,7 @@ const vector<int>& AtomCostCrystal::pairCounts() const
 // public methods - specific
 
 // Evaluate cost of Cartesian separation between two sites
-// The separation vector is tranformed to unit cell vector.
+// The separation vector is transformed to unit cell vector.
 // This method also sets
 
 pair<double,int>

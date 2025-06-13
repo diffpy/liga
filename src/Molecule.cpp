@@ -1461,7 +1461,7 @@ const pair<int*,int*>& Molecule::Evolve(const int* est_triang)
     fill(acc, acc + NTGTYPES, 0);
     fill(tot, tot + NTGTYPES, 0);
     assert(!atoms_bucket.empty());
-    // containter for test atoms
+    // container for test atoms
     AtomArray vta;
     // evolution is trivial for empty or 1-atom molecule
     switch (countAtoms())

@@ -6,3 +6,8 @@ mater
 
 ;; Frobenius norm used in np.linalg.norm
 fro
+
+;; cpp variables and others commands
+LSit
+discus
+nd
