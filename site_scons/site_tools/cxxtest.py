@@ -122,7 +122,8 @@ def prepend_ld_library_path(env, overrides, **kwargs):
     were linked against local shared libraries."""
     # make it unique but preserve order ...
     libpath = uniquer(
-        Split(kwargs.get("CXXTEST_LIBPATH", [])) + Split(env.get("CXXTEST_LIBPATH", []))
+        Split(kwargs.get("CXXTEST_LIBPATH", []))
+        + Split(env.get("CXXTEST_LIBPATH", []))
     )
     if len(libpath) > 0:
         libpath = env.arg2nodes(libpath, env.fs.Dir)
@@ -133,7 +134,9 @@ def prepend_ld_library_path(env, overrides, **kwargs):
             var = "LD_LIBRARY_PATH"
         eenv = overrides.get("ENV", env["ENV"].copy())
         canonicalize = lambda p: p.abspath
-        eenv[var] = PrependPath(eenv.get(var, ""), libpath, os.pathsep, 1, canonicalize)
+        eenv[var] = PrependPath(
+            eenv.get(var, ""), libpath, os.pathsep, 1, canonicalize
+        )
         overrides["ENV"] = eenv
     return overrides
 
@@ -148,7 +151,9 @@ def UnitTest(env, target, source=[], **kwargs):
     cxxremove = set(
         Split(multiget([kwargs, env, os.environ], "CXXTEST_CXXFLAGS_REMOVE"))
     )
-    ccremove = set(Split(multiget([kwargs, env, os.environ], "CXXTEST_CCFLAGS_REMOVE")))
+    ccremove = set(
+        Split(multiget([kwargs, env, os.environ], "CXXTEST_CCFLAGS_REMOVE"))
+    )
     # remove the required flags
     ccflags = [item for item in ccflags if item not in ccremove]
     cxxflags = [item for item in cxxflags if item not in cxxremove]
@@ -179,7 +184,8 @@ def isValidScriptPath(cxxtestgen):
         return True
     else:
         SCons.Warnings.warn(
-            ToolCxxTestWarning, "Invalid CXXTEST environment variable specified!"
+            ToolCxxTestWarning,
+            "Invalid CXXTEST environment variable specified!",
         )
         return False
 
@@ -233,8 +239,11 @@ def findCxxTestGen(env):
         envget(env, "CXXTEST_CXXTESTGEN_DEFAULT_LOCATION"),
     )
 
-    cxxtest = env.WhereIs(envget(env, "CXXTEST_CXXTESTGEN_SCRIPT_NAME")) or env.WhereIs(
-        envget(env, "CXXTEST_CXXTESTGEN_SCRIPT_NAME"), path=[Dir(check_path).abspath]
+    cxxtest = env.WhereIs(
+        envget(env, "CXXTEST_CXXTESTGEN_SCRIPT_NAME")
+    ) or env.WhereIs(
+        envget(env, "CXXTEST_CXXTESTGEN_SCRIPT_NAME"),
+        path=[Dir(check_path).abspath],
     )
 
     if cxxtest:
@@ -320,7 +329,9 @@ def generate(env, **kwargs):
     env.SetDefault(
         CXXTEST_CXXFLAGS_REMOVE=["-pedantic", "-Weffc++", "-pedantic-errors"]
     )
-    env.SetDefault(CXXTEST_CCFLAGS_REMOVE=["-pedantic", "-Weffc++", "-pedantic-errors"])
+    env.SetDefault(
+        CXXTEST_CCFLAGS_REMOVE=["-pedantic", "-Weffc++", "-pedantic-errors"]
+    )
     env.SetDefault(CXXTEST_INSTALL_DIR="#/cxxtest/")
 
     # this one's not for public use - it documents where the cxxtestgen script
@@ -362,7 +373,9 @@ def generate(env, **kwargs):
             src_suffix="$CXXTEST_SUFFIX",
         )
     else:
-        cxxtest_builder = lambda *a: sys.stderr.write("ERROR: CXXTESTGEN NOT FOUND!")
+        cxxtest_builder = lambda *a: sys.stderr.write(
+            "ERROR: CXXTESTGEN NOT FOUND!"
+        )
 
     def CxxTest(env, target, source=None, **kwargs):
         """Usage:
@@ -392,7 +405,9 @@ def generate(env, **kwargs):
             except AttributeError:
                 s = l
 
-            if s.endswith(multiget([kwargs, env, os.environ], "CXXTEST_SUFFIX", None)):
+            if s.endswith(
+                multiget([kwargs, env, os.environ], "CXXTEST_SUFFIX", None)
+            ):
                 headers.append(l)
             else:
                 linkins.append(l)
@@ -410,7 +425,7 @@ def generate(env, **kwargs):
                         header,
                         CXXTEST_RUNNER="none",
                         CXXTEST_ROOT_PART="--part",
-                        **kwargs
+                        **kwargs,
                     )
                     for header in headers
                 ]

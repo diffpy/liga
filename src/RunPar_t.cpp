@@ -464,7 +464,7 @@ boost::python::object RunPar_t::importScoopFunction() const
     if (mscoopfunctionobj.get())  return *mscoopfunctionobj;
     initializePython();
     mscoopfunctionobj.reset(new python::object());
-    // retrieve module and functio name from scoopfunction string
+    // retrieve module and function name from scoopfunction string
     string::size_type pcolon = this->scoopfunction.find(':');
     string scmodname = this->scoopfunction.substr(0, pcolon);
     string scfncname = this->scoopfunction.substr(pcolon + 1);

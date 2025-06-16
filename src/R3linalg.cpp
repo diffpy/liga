@@ -1,7 +1,7 @@
 /***********************************************************************
 * Short Title: linear algebra functions on R3
 *
-* Comments: defininitions of linear algebra functions for
+* Comments: definitions of linear algebra functions for
 *     blitz::TinyVector  and  blitz::TinyMatrix
 *
 * <license text>
