@@ -48,8 +48,8 @@
 # work on unix though, because target can't have a suffix right now.
 #
 # env.CxxTest(['target.t.h'])
-# This compiles target.t.h as in the previous example, but now sees that it is a
-# source file. It need not have the same suffix as the env['CXXTEST_SUFFIX']
+# This compiles target.t.h as in the previous example, but now sees that it is
+# a source file. It need not have the same suffix as the env['CXXTEST_SUFFIX']
 # variable dictates. The only file provided is taken as the test source file.
 #
 # env.CxxTest(['test1.t.h','test1_lib.cpp','test1_lib2.cpp','test2.t.h',...])
@@ -64,9 +64,10 @@
 #
 
 import os
+import sys
 
 from SCons.Builder import Builder
-from SCons.Script import *
+from SCons.Script import Dir, File, Flatten, SCons, Split
 from SCons.Util import PrependPath, unique, uniquer
 
 
@@ -83,8 +84,8 @@ SCons.Warnings.enableWarningClass(ToolCxxTestWarning)
 
 
 def accumulateEnvVar(dicts, name, default=[]):
-    """Accumulates the values under key 'name' from the list of dictionaries
-    dict.
+    """Accumulates the values under key 'name' from the list of
+    dictionaries dict.
 
     The default value is appended to the end list if 'name' does not
     exist in the dict.
@@ -118,8 +119,8 @@ def envget(env, key, default=None):
 
 
 def prepend_ld_library_path(env, overrides, **kwargs):
-    """Prepend LD_LIBRARY_PATH with LIBPATH to run successfully programs that
-    were linked against local shared libraries."""
+    """Prepend LD_LIBRARY_PATH with LIBPATH to run successfully programs
+    that were linked against local shared libraries."""
     # make it unique but preserve order ...
     libpath = uniquer(
         Split(kwargs.get("CXXTEST_LIBPATH", []))
@@ -142,8 +143,8 @@ def prepend_ld_library_path(env, overrides, **kwargs):
 
 
 def UnitTest(env, target, source=[], **kwargs):
-    """Prepares the Program call arguments, calls Program and adds the result
-    to the check target."""
+    """Prepares the Program call arguments, calls Program and adds the
+    result to the check target."""
     # get the c and cxx flags to process.
     ccflags = Split(multiget([kwargs, env, os.environ], "CCFLAGS"))
     cxxflags = Split(multiget([kwargs, env, os.environ], "CXXFLAGS"))
@@ -178,7 +179,8 @@ def UnitTest(env, target, source=[], **kwargs):
 
 
 def isValidScriptPath(cxxtestgen):
-    """Check keyword arg or environment variable locating cxxtestgen script."""
+    """Check keyword arg or environment variable locating cxxtestgen
+    script."""
 
     if cxxtestgen and os.path.exists(cxxtestgen):
         return True
@@ -282,8 +284,8 @@ def generate(env, **kwargs):
     Keyword arguments (all can be set via environment variables as well):
     CXXTEST         - the path to the cxxtestgen script.
                         Default: searches SCons environment, OS environment,
-                        path and project in that order. Instead of setting this,
-                        you can also set CXXTEST_INSTALL_DIR
+                        path and project in that order. Instead of setting
+                        this, you can also set CXXTEST_INSTALL_DIR
     CXXTEST_RUNNER  - the runner to use.  Default: ErrorPrinter
     CXXTEST_OPTS    - other options to pass to cxxtest.  Default: ''
     CXXTEST_SUFFIX  - the suffix of the test files.  Default: '.t.h'
@@ -295,19 +297,19 @@ def generate(env, **kwargs):
     CXXTEST_CXXFLAGS_REMOVE - the flags that cxxtests can't compile with,
                               or give lots of warnings. Will be stripped.
                               Default: -pedantic -Weffc++
-    CXXTEST_CCFLAGS_REMOVE - the same thing as CXXTEST_CXXFLAGS_REMOVE, just for
-                            CCFLAGS. Default: same as CXXFLAGS.
+    CXXTEST_CCFLAGS_REMOVE - the same thing as CXXTEST_CXXFLAGS_REMOVE, just
+                            for CCFLAGS. Default: same as CXXFLAGS.
     CXXTEST_PYTHON  - the path to the python binary.
                         Default: searches path for python
     CXXTEST_SKIP_ERRORS - set to True to continue running the next test if one
                           test fails. Default: False
-    CXXTEST_CPPPATH - If you do not want to clutter your global CPPPATH with the
-                        CxxTest header files and other stuff you only need for
-                        your tests, this is the variable to set. Behaves as
-                        CPPPATH does.
+    CXXTEST_CPPPATH - If you do not want to clutter your global CPPPATH with
+                        the CxxTest header files and other stuff you only need
+                        for your tests, this is the variable to set. Behaves
+                        as CPPPATH does.
     CXXTEST_LIBPATH - If your test is linked to shared libraries which are
-                        outside of standard directories. This is used as LIBPATH
-                        when compiling the test program and to modify
+                        outside of standard directories. This is used as
+                        LIBPATH when compiling the test program and to modify
                         LD_LIBRARY_PATH (or PATH on win32) when running the
                         program.
     CXXTEST_INSTALL_DIR - this is where you tell the builder where CxxTest is
@@ -385,32 +387,33 @@ def generate(env, **kwargs):
         env.CxxTest('target_name', source = 'test_src.t.h') will build the test
             from test_src.t.h source,
         env.CxxTest('target_name, source = ['test_src.t.h', other_srcs]
-            builds the test from source[0] and links in other files mentioned in
-            sources,
-        You may also add additional arguments to the function. In that case, they
-        will be passed to the actual Program builder call unmodified. Convenient
-        for passing different CPPPATHs and the sort. This function also appends
-        CXXTEST_CPPPATH to CPPPATH. It does not clutter the environment's CPPPATH.
+            builds the test from source[0] and links in other files mentioned
+            in sources,
+        You may also add additional arguments to the function. In that case,
+        they will be passed to the actual Program builder call unmodified.
+        Convenient for passing different CPPPATHs and the sort. This function
+        also appends CXXTEST_CPPPATH to CPPPATH. It does not clutter the
+        environment's CPPPATH.
         """
-        if source == None:
+        if source is None:
             suffix = multiget([kwargs, env, os.environ], "CXXTEST_SUFFIX", "")
             source = [t + suffix for t in target]
         sources = Flatten(Split(source))
         headers = []
         linkins = []
-        for l in sources:
+        for src in sources:
             # check whether this is a file object or a string path
             try:
-                s = l.abspath
+                s = src.abspath
             except AttributeError:
-                s = l
+                s = src
 
             if s.endswith(
                 multiget([kwargs, env, os.environ], "CXXTEST_SUFFIX", None)
             ):
-                headers.append(l)
+                headers.append(src)
             else:
-                linkins.append(l)
+                linkins.append(src)
 
         deps = []
         if len(headers) == 0:
