@@ -118,6 +118,10 @@ def envget(env, key, default=None):
     return multiget([env, os.environ], key, default)
 
 
+def canonicalize(p):
+    return p.abspath
+
+
 def prepend_ld_library_path(env, overrides, **kwargs):
     """Prepend LD_LIBRARY_PATH with LIBPATH to run successfully programs
     that were linked against local shared libraries."""
@@ -134,7 +138,6 @@ def prepend_ld_library_path(env, overrides, **kwargs):
         else:
             var = "LD_LIBRARY_PATH"
         eenv = overrides.get("ENV", env["ENV"].copy())
-        canonicalize = lambda p: p.abspath
         eenv[var] = PrependPath(
             eenv.get(var, ""), libpath, os.pathsep, 1, canonicalize
         )
@@ -375,9 +378,11 @@ def generate(env, **kwargs):
             src_suffix="$CXXTEST_SUFFIX",
         )
     else:
-        cxxtest_builder = lambda *a: sys.stderr.write(
-            "ERROR: CXXTESTGEN NOT FOUND!"
-        )
+
+        def error_builder(*args, **kwargs):
+            sys.stderr.write("ERROR: CXXTESTGEN NOT FOUND!\n")
+
+        cxxtest_builder = error_builder
 
     def CxxTest(env, target, source=None, **kwargs):
         """Usage:
